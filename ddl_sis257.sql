@@ -44,3 +44,5 @@ CREATE TABLE usuarios (
 -- listas_reproduccion (id, nombre, id_usuario)
 -- listas_canciones (id, id_lista_reproduccion, id_cancion, fecha)
 
+INSERT INTO generos(descripcion) values('rock');
+select * from generos;
