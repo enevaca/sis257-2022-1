@@ -27,7 +27,10 @@ export class InterpreteService {
   }
 
   async findOne(id: number): Promise<InterpreteEntity> {
-    const existe = await this.repository.findOne({ where: { id } });
+    const existe = await this.repository.findOne({
+      where: { id },
+      relations: { albums: true },
+    });
     if (!existe) throw new NotFoundException(`El interprete ${id} no existe.`);
     return existe;
   }
@@ -38,7 +41,7 @@ export class InterpreteService {
   ): Promise<InterpreteEntity> {
     const existe = await this.repository.findOne({ where: { id } });
     if (!existe) throw new NotFoundException(`El interprete ${id} no existe.`);
-    
+
     const updateInterprete = Object.assign(existe, updateInterpreteDto);
     return await this.repository.save(updateInterprete);
   }

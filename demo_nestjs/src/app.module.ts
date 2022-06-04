@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { InterpreteModule } from './interprete/interprete.module';
 import { GeneroModule } from './genero/genero.module';
 import { AlbumModule } from './album/album.module';
+import { CancionModule } from './cancion/cancion.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AlbumModule } from './album/album.module';
     InterpreteModule,
     GeneroModule,
     AlbumModule,
+    CancionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

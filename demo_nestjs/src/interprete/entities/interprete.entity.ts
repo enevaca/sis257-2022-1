@@ -13,6 +13,6 @@ export class InterpreteEntity {
   @Column()
   nacionalidad: string;
 
-  @OneToMany(() => AlbumEntity, (album) => album.interprete)
+  @OneToMany(() => AlbumEntity, album => album.interprete)
   albums: AlbumEntity[];
 }

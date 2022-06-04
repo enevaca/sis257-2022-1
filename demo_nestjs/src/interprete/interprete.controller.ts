@@ -11,12 +11,15 @@ import { InterpreteService } from './interprete.service';
 import { CreateInterpreteDto } from './dto/create-interprete.dto';
 import { UpdateInterpreteDto } from './dto/update-interprete.dto';
 import { InterpreteEntity } from './entities/interprete.entity';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('interprete')
 @Controller('interprete')
 export class InterpreteController {
   constructor(private readonly interpreteService: InterpreteService) {}
 
   @Post()
+  @ApiCreatedResponse({ type: InterpreteEntity })
   create(
     @Body() createInterpreteDto: CreateInterpreteDto,
   ): Promise<InterpreteEntity> {
@@ -24,16 +27,19 @@ export class InterpreteController {
   }
 
   @Get()
+  @ApiOkResponse({ type: InterpreteEntity, isArray: true })
   findAll(): Promise<InterpreteEntity[]> {
     return this.interpreteService.findAll();
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: InterpreteEntity })
   findOne(@Param('id') id: string): Promise<InterpreteEntity> {
     return this.interpreteService.findOne(+id);
   }
 
   @Patch(':id')
+  @ApiOkResponse({ type: InterpreteEntity })
   update(
     @Param('id') id: string,
     @Body() updateInterpreteDto: UpdateInterpreteDto,
