@@ -16,7 +16,7 @@ async function bootstrap() {
     .addTag('interprete, genero, album')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('apidoc', app, document);
+  SwaggerModule.setup('apidoc', app, document, { swaggerOptions: { filter: true, displayRequestDuration: true } });
 
   await app.listen(process.env.APP_PORT);
   console.log(`App corriendo en ${await app.getUrl()}/apidoc`);

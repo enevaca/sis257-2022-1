@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue';
 import http from "@/plugins/axios";
 import router from '@/router';
 
-const ENDPOINT = 'interprete';
+const ENDPOINT = 'interpretes';
 var interpretes = ref<Interprete[]>([]);
 
 async function getInterpretes() {

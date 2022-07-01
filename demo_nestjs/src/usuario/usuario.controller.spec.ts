@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { InterpreteEntity } from './entities/interprete.entity';
-import { InterpreteController } from './interprete.controller';
-import { InterpreteService } from './interprete.service';
+import { UsuarioEntity } from './entities/usuario.entity';
+import { UsuarioController } from './usuario.controller';
+import { UsuarioService } from './usuario.service';
 
 type MockType<T> = { [P in keyof T]?: jest.Mock<{}> };
 
@@ -11,19 +11,19 @@ const repositoryMockFactory: () => MockType<Repository<any>> = jest.fn(
   () => ({}),
 );
 
-describe('InterpreteController', () => {
-  let controller: InterpreteController;
+describe('UsuarioController', () => {
+  let controller: UsuarioController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [InterpreteController],
+      controllers: [UsuarioController],
       providers: [
-        InterpreteService,
-        { provide: getRepositoryToken(InterpreteEntity), useFactory: repositoryMockFactory },
+        UsuarioService,
+        { provide: getRepositoryToken(UsuarioEntity), useFactory: repositoryMockFactory },
       ],
     }).compile();
 
-    controller = module.get<InterpreteController>(InterpreteController);
+    controller = module.get<UsuarioController>(UsuarioController);
   });
 
   it('should be defined', () => {

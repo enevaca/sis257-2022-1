@@ -13,8 +13,8 @@ import { UpdateGeneroDto } from './dto/update-genero.dto';
 import { GeneroEntity } from './entities/genero.entity';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('genero')
-@Controller('genero')
+@ApiTags('generos')
+@Controller('generos')
 export class GeneroController {
   constructor(private readonly generoService: GeneroService) {}
 

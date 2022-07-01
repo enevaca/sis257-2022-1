@@ -14,7 +14,7 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
 
 @ApiTags('albums')
-@Controller('album')
+@Controller('albums')
 export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 

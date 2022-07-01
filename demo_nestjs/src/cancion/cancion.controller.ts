@@ -12,8 +12,8 @@ import { CancionService } from './cancion.service';
 import { CreateCancionDto } from './dto/create-cancion.dto';
 import { UpdateCancionDto } from './dto/update-cancion.dto';
 
-@ApiTags('cancion')
-@Controller('cancion')
+@ApiTags('canciones')
+@Controller('canciones')
 export class CancionController {
   constructor(private readonly cancionService: CancionService) {}
 
