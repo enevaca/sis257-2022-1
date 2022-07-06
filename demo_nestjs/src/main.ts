@@ -14,6 +14,7 @@ async function bootstrap() {
     .setDescription('La descripción de la API SIS257')
     .setVersion('1.0')
     .addTag('interprete, genero, album')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('apidoc', app, document, { swaggerOptions: { filter: true, displayRequestDuration: true } });

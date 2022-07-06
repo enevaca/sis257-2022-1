@@ -1,0 +1,182 @@
+  
+//Instalar
+npm i bcrypt @nestjs/passport @nestjs/jwt passport passport-jwt 
+npm i -D @types/bcrypt @types/passport @types/passport-jwt
+
+// .env
+# JWT
+JWT_TOKEN=S1S257_1nf0
+JWT_TOKEN_EXPIRATION=60s
+
+// scr -> usuario -> usuario.service.ts
+async validate(usuario: string, clave: string): Promise<UsuarioEntity> {
+    const usuarioOk = await this.repository.findOne({
+      where: { usuario },
+      select: ['id', 'usuario', 'clave', 'email', 'rol', 'premium'],
+    });
+
+    if (!usuarioOk) throw new NotFoundException('Usuario inexistente');
+    
+    if (!(await usuarioOk?.validatePassword(clave))) {
+      throw new UnauthorizedException('Clave incorrecta');
+    }
+
+    delete usuarioOk.clave;
+    return usuarioOk;
+  }
+  
+  // scr -> usuario -> usuario.module.ts
+  exports: [UsuarioService]
+
+// nest g resource auth			-> Sin CRUD     npm install -g @nestjs/cli
+  // Crear directorios en auth: interfaces, strategies, guards, decorators, dto
+  
+  
+  // auth -> interfaces -> jwt-payload.interface.ts
+export interface JwtPayload {
+  sub: number;
+  iat?: number;
+  exp?: number;
+}
+
+// auth -> strategies -> jwt.strategy.ts
+import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UsuarioEntity } from 'src/usuario/entities/usuario.entity';
+import { AuthService } from '../auth.service';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  constructor(private readonly authService: AuthService) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_TOKEN,
+      ignoreExpiration: false,
+      passReqToCallback: false,
+    });
+  }
+
+  async validate(payload: JwtPayload): Promise<UsuarioEntity> {
+    return await this.authService.verifyPayload(payload);
+  }
+}
+
+
+// auth -> decorators -> auth-public.decorator.ts
+import { SetMetadata } from '@nestjs/common';
+
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+  
+
+// auth -> guards -> jwt-auth.guard.ts
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) { super(); }
+
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
+
+    return super.canActivate(context);
+  }
+}
+  
+  
+// auth -> auth.module.ts
+@Module({
+  imports: [ConfigModule.forRoot(), UsuarioModule, PassportModule.register({}), JwtModule.register({})],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy]
+})
+export class AuthModule {}
+  
+
+// auth -> dto -> auth-login.dto.ts
+export class AuthLoginDto {
+  @ApiProperty()
+  @IsNotEmpty({ message: 'El campo Usuario no debe ser vacío' })
+  @IsString({ message: 'El campo Usuario debe ser de tipo cadena' })
+  @MaxLength(20, { message: 'El campo Usuario excede los 20 caracteres' })
+  @MinLength(4, { message: 'El campo Usuario es menor a 4 caracteres' })
+  usuario: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: 'El campo Clave/Contraseña no debe ser vacío' })
+  @IsString({ message: 'El campo Clave/Contraseña debe ser de tipo cadena' })
+  clave: string;
+}
+
+
+
+// auth -> auth.service.ts
+@Injectable()
+export class AuthService {
+  constructor(
+    private usuarioService: UsuarioService,
+    private jwtService: JwtService,
+  ) {}
+
+  async login(authLoginDto: AuthLoginDto): Promise<any> {
+    const { usuario, clave } = authLoginDto;
+    const usuarioOk = await this.usuarioService.validate(usuario, clave);
+
+    const payload = { sub: usuarioOk.id };
+    const access_token = await this.getAccessToken(payload);
+
+    return { ...usuarioOk, access_token };
+  }
+
+  async getAccessToken(payload) {
+    const accessToken = await this.jwtService.sign(payload, {
+      secret: process.env.JWT_TOKEN,
+      expiresIn: process.env.JWT_TOKEN_EXPIRATION,
+    });
+    return accessToken;
+  }
+
+  async verifyPayload(payload: JwtPayload): Promise<UsuarioEntity> {
+    let usuario: UsuarioEntity;
+
+    try {
+      usuario = await this.usuarioService.findOne(payload.sub);
+    } catch (error) {
+      throw new UnauthorizedException(`Usuario inválido: ${payload.sub}`);
+    }
+
+    return usuario;
+  }
+
+
+
+// auth -> auth.controller.ts
+@ApiTags('auth')
+@ApiBearerAuth()
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() authLoginDto: AuthLoginDto): Promise<any> {
+    return this.authService.login(authLoginDto);
+  }
+}
+
+
+// En los controladores añadir @ApiBearerAuth() al inicio de la clase 
+// Usar @UseGuards(JwtAuthGuard) o @Public
+
+// En el main.ts añadir para Swagger
+.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' })
+
+  
+  
+  
+  
+  

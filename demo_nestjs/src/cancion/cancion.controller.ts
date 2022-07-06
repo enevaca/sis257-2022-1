@@ -6,14 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CancionService } from './cancion.service';
 import { CreateCancionDto } from './dto/create-cancion.dto';
 import { UpdateCancionDto } from './dto/update-cancion.dto';
 
 @ApiTags('canciones')
 @Controller('canciones')
+@UseGuards(JwtAuthGuard)
 export class CancionController {
   constructor(private readonly cancionService: CancionService) {}
 

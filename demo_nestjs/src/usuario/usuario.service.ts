@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
@@ -56,5 +56,21 @@ export class UsuarioService {
     if (!existe) throw new NotFoundException(`El usuario ${id} no existe.`);
 
     await this.repository.delete(id);
+  }
+
+  async validate(usuario: string, clave: string): Promise<UsuarioEntity> {
+    const usuarioOk = await this.repository.findOne({
+      where: { usuario },
+      select: ['id', 'usuario', 'clave', 'email', 'rol', 'premium'],
+    });
+
+    if (!usuarioOk) throw new NotFoundException('Usuario inexistente');
+    
+    if (!(await usuarioOk?.validatePassword(clave))) {
+      throw new UnauthorizedException('Clave incorrecta');
+    }
+
+    delete usuarioOk.clave;
+    return usuarioOk;
   }
 }

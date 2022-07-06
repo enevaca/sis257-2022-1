@@ -6,15 +6,20 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { InterpreteService } from './interprete.service';
 import { CreateInterpreteDto } from './dto/create-interprete.dto';
 import { UpdateInterpreteDto } from './dto/update-interprete.dto';
 import { InterpreteEntity } from './entities/interprete.entity';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Public } from 'src/auth/decorators/auth-public.decorator';
 
 @ApiTags('interpretes')
 @Controller('interpretes')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class InterpreteController {
   constructor(private readonly interpreteService: InterpreteService) {}
 
@@ -33,6 +38,7 @@ export class InterpreteController {
   }
 
   @Get(':id')
+  @Public()
   @ApiOkResponse({ type: InterpreteEntity })
   findOne(@Param('id') id: string): Promise<InterpreteEntity> {
     return this.interpreteService.findOne(+id);
