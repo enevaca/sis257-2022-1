@@ -12,17 +12,12 @@ const router = createRouter({
     {
       path: "/interpretes",
       name: "interpretes",
-      component: () => import("../views/Interprete.vue")
-    },
-    {
-      path: "/interpretes/crear",
-      name: "interpretesCrear",
-      component: () => import("../components/interprete/InterpreteCreate.vue")
-    },
-    {
-      path: "/interpretes/editar/:id",
-      name: "interpretesEditar",
-      component: () => import("../components/interprete/InterpreteEdit.vue")
+      component: () => import("../views/InterpreteView.vue"),
+      children: [
+        { path: "", component: () => import("../components/interprete/InterpreteList.vue") },
+        { path: "crear", component: () => import("../components/interprete/InterpreteCreate.vue") },
+        { path: "editar/:id", component: () => import("../components/interprete/InterpreteEdit.vue") }
+      ]
     },
     {
       path: "/about",
