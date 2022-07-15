@@ -19,7 +19,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('apidoc', app, document, { swaggerOptions: { filter: true, displayRequestDuration: true } });
 
-  await app.listen(process.env.APP_PORT);
+  await app.listen(process.env.PORT || 3000);
   console.log(`App corriendo en ${await app.getUrl()}/apidoc`);
 }
 bootstrap();

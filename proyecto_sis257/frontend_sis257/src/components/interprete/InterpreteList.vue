@@ -48,7 +48,7 @@ onMounted(() => {
     </div>
 
     <div class="table-responsive">
-      <table class="table table-bordered table-striped table-hover">
+      <table class="table table-bordered" style="color:white">
         <thead>
           <tr>
             <th scope="col">N°</th>
